@@ -1,0 +1,30 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Identity {
+
+  struct Credential {
+    bytes32 hash;
+    bool revoked; 
+  }
+  
+  mapping (address => mapping (bytes32 => Credential)) public credentials;
+
+  function addCredential(bytes32 credHash) external {
+    credentials[msg.sender][credHash] = Credential(credHash, false);
+  }
+
+  function revokeCredential(bytes32 credHash) external { 
+    Credential storage credential = credentials[msg.sender][credHash];
+    credential.revoked = true;
+  }
+
+  function getCredential(address user, bytes32 credHash) 
+    external
+    view 
+    returns (Credential memory)
+  {
+    return credentials[user][credHash];
+  }
+
+}
